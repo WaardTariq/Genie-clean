@@ -55,6 +55,7 @@ Route::middleware(['auth'])->group(function () {
 
     Route::controller(BookingController::class)->group(function () {
         Route::get('booking-list','bookingList')->name('bookingList');
+        Route::get('booking-detail/{id}','bookingDetail')->name('bookingDetail');
         
     });
 

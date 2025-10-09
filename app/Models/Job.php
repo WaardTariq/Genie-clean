@@ -22,9 +22,9 @@ class Job extends Model
         return $this->belongsTo(Cleaner::class);
     }
 
-    public function promoCodeUsages()
+    public function promoCode()
     {
-        return $this->hasMany(PromoCodeUsages::class, 'job_id');
+        return $this->belongsTo(PromoCode::class);
     }
 
     public function service()

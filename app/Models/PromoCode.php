@@ -10,4 +10,9 @@ class PromoCode extends Model
     use HasFactory;
 
     protected $guarded = [];
+
+    public function bookings()
+    {
+        return $this->hasMany(Job::class, 'promo_code_id');
+    }
 }

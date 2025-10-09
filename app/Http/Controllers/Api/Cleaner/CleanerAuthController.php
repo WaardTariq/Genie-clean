@@ -6,6 +6,7 @@ use App\CentralLogics\Helpers;
 use App\Http\Controllers\Controller;
 use App\Models\Cleaner;
 use App\Models\PasswordReset;
+use App\Models\service;
 use App\Models\Zone;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -199,10 +200,10 @@ class CleanerAuthController extends Controller
     public function updateProfile(Request $request)
     {
         $validator = Validator::make($request->all(), [
-            'name' => 'required',
+            'name' => 'required|string|max:255',
             'zone_id' => 'required|exists:zones,id',
-            'experience_year' => 'required',
-            'phone' => 'required',
+            'experience_year' => 'required|integer|min:0',
+            'phone' => 'required|string|max:20',
             'services' => 'nullable|array',
             'services.*.service_id' => 'required|exists:services,id',
             'services.*.price' => 'required|numeric|min:0',
@@ -216,7 +217,6 @@ class CleanerAuthController extends Controller
         try {
             $cleaner = auth('cleaners')->user();
 
-            // Update basic fields
             $cleaner->name = $request->name;
             $cleaner->experience_year = $request->experience_year;
             $cleaner->phone = $request->phone;
@@ -227,20 +227,48 @@ class CleanerAuthController extends Controller
 
             $cleaner->save();
 
-            // Store zone in pivot table
             if ($request->has('zone_id')) {
                 $cleaner->zones()->syncWithoutDetaching([$request->zone_id]);
             }
 
-            // Store services in pivot table
             if ($request->filled('services')) {
                 $syncData = [];
-                foreach ($request->services as $service) {
-                    $syncData[$service['service_id']] = [
-                        'price' => $service['price'],
-                        'duration_minutes' => $service['duration_minutes']
+
+                foreach ($request->services as $serviceInput) {
+                    $service = service::find($serviceInput['service_id']);
+
+                    if (!$service) {
+                        return response()->json(['status' => false, 'message' => 'Invalid service selected'], 400);
+                    }
+
+                    if (
+                        isset($service->min_price, $service->max_price) &&
+                        ($serviceInput['price'] < $service->min_price || $serviceInput['price'] > $service->max_price)
+                    ) {
+                        return response()->json([
+                            'status' => false,
+                            'message' => "Price for {$service->name} must be between {$service->min_price} and {$service->max_price}"
+                        ], 400);
+                    }
+
+                    if (
+                        isset($service->min_duration, $service->max_duration) &&
+                        ($serviceInput['duration_minutes'] < $service->min_duration_minutes ||
+                            $serviceInput['duration_minutes'] > $service->max_duration_minutes)
+                    ) {
+                        return response()->json([
+                            'status' => false,
+                            'message' => "Duration for {$service->name} must be between {$service->min_duration_minutes} and {$service->max_duration_minutes} minutes"
+                        ], 400);
+                    }
+
+                    $syncData[$service->id] = [
+                        'price' => $serviceInput['price'],
+                        'duration_minutes' => $serviceInput['duration_minutes']
                     ];
                 }
+
+                // ✅ Attach valid data
                 $cleaner->services()->syncWithoutDetaching($syncData);
             }
 
@@ -254,11 +282,12 @@ class CleanerAuthController extends Controller
         }
     }
 
+
     public function getZones()
     {
         try {
             $zones = Zone::where('status', 1)->get();
-            return response()->json(['status' => true, 'message' => 'Zones Fetched Successfully','data' => $zones], 200);
+            return response()->json(['status' => true, 'message' => 'Zones Fetched Successfully', 'data' => $zones], 200);
         } catch (\Exception $e) {
             return response()->json(['status' => false, 'message' => 'Something Went Wrong' . $e->getMessage()], 500);
         }

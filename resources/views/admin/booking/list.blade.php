@@ -45,7 +45,7 @@
                             <tbody>
                                 @forelse ($bookings as $booking )
                                 <tr>
-                                    <td><a href="#">{{ $booking->service->name ?? 'Not Found' }}</a></td>
+                                    <td><a href="{{ route('bookingDetail',$booking->id) }}">{{ $booking->service->name ?? 'Not Found' }}</a></td>
                                     <td>{{ $booking->cleaner->name ?? 'Not Found' }}</td>
                                     <td>{{ $booking->user->name ?? 'Not Found' }}</td>
                                     <td>
@@ -72,7 +72,6 @@
                                     </td>
                                     <td>
                                         <div class="btn-group">
-                                            <a href="jobsViewPage.php" type="button" class="btn btn-outline-info"><i class="fa-regular fa-eye"></i></a>
                                             <button type="button" class="btn btn-outline-danger"><i class="fa-solid fa-trash"></i></button>
                                         </div>
                                     </td>
