@@ -9,6 +9,7 @@ use App\Http\Controllers\BookingController;
 use App\Http\Controllers\CleanerController;
 use App\Http\Controllers\PromoCodeController;
 use App\Http\Controllers\UserController;
+use App\Http\Controllers\BannerController;
 
 /*
 |--------------------------------------------------------------------------
@@ -41,8 +42,8 @@ Route::middleware(['auth'])->group(function () {
         Route::get('category-delete/{id}', 'categoryDelete')->name('categoryDelete');
     });
 
-    Route::controller(UserController::class)->group(function(){
-        Route::get('user-list','userList')->name('userList');
+    Route::controller(UserController::class)->group(function () {
+        Route::get('user-list', 'userList')->name('userList');
     });
 
     Route::controller(ServiceController::class)->group(function () {
@@ -50,24 +51,24 @@ Route::middleware(['auth'])->group(function () {
         Route::get('service-create', 'serviceCreate')->name('serviceCreate');
         Route::post('service-store', 'serviceStore')->name('serviceStore');
         Route::get('service-edit/{serviceId}', 'serviceEdit')->name('serviceEdit');
-        Route::get('service-delete/{serviceId}','serviceDelete')->name('serviceDelete');
+        Route::get('service-delete/{serviceId}', 'serviceDelete')->name('serviceDelete');
     });
 
     Route::controller(BookingController::class)->group(function () {
-        Route::get('booking-list','bookingList')->name('bookingList');
-        Route::get('booking-detail/{id}','bookingDetail')->name('bookingDetail');
-        
+        Route::get('booking-list', 'bookingList')->name('bookingList');
+        Route::get('booking-detail/{id}', 'bookingDetail')->name('bookingDetail');
+
     });
 
-    Route::controller(PromoCodeController::class)->group(function(){
-        Route::get('promo-code-index','promoCodeIndex')->name('promoCodeIndex');
-        Route::get('create-promo-code','createPromoCode')->name('createPromoCode');
-        Route::post('store-promo-code','storePromoCode')->name('storePromoCode');
+    Route::controller(PromoCodeController::class)->group(function () {
+        Route::get('promo-code-index', 'promoCodeIndex')->name('promoCodeIndex');
+        Route::get('create-promo-code', 'createPromoCode')->name('createPromoCode');
+        Route::post('store-promo-code', 'storePromoCode')->name('storePromoCode');
     });
 
     Route::controller(CleanerController::class)->group(function () {
         Route::get('cleaner-index', 'cleanerIndex')->name('cleanerIndex');
-        Route::get('cleaner-detail/{id}','cleanerDetail')->name('cleanerDetail');
+        Route::get('cleaner-detail/{id}', 'cleanerDetail')->name('cleanerDetail');
     });
 
 
@@ -82,8 +83,13 @@ Route::middleware(['auth'])->group(function () {
         Route::get('zone-show/{zoneId}', 'zoneShow')->name('zoneShow');
     });
 
-    Route::controller(AuthController::class)->group(function(){
-        Route::get('edit-profile','editProfile')->name('editProfile');
+    Route::controller(AuthController::class)->group(function () {
+        Route::get('edit-profile', 'editProfile')->name('editProfile');
+    });
+
+    Route::controller(BannerController::class)->group(function () {
+        Route::get('create-banner', 'createBanner')->name('createBanner');
+        Route::post('store-banner','storeBanner')->name('storeBanner');
     });
 
 });

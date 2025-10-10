@@ -126,11 +126,11 @@
             </a>
         </li>
         <li>
-            <a href="invoiceList.php" class="">
+            <a href="{{ route('createBanner') }}" class="">
                 <div class="parent-icon">
-                    <i class="fa-solid fa-box"></i>
+                   <i class="fa-solid fa-flag"></i>
                 </div>
-                <div class="menu-title">Invoices</div>
+                <div class="menu-title">Banners</div>
             </a>
         </li>
         <li>
