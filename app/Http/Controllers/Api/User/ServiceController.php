@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Api\User;
 
 use App\Http\Controllers\Controller;
+use App\Models\Banner;
 use App\Models\Cleaner;
 use App\Models\Job;
 use App\Models\PromoCode;
@@ -18,7 +19,8 @@ class ServiceController extends Controller
     {
         try {
             $services = service::where('status', 1)->get();
-            return response()->json(['status' => true, 'message' => 'Services Fetched Successfully', 'data' => $services], 200);
+            $banner = Banner::where('status',1)->get();
+            return response()->json(['status' => true, 'message' => 'Services Fetched Successfully', 'data' => $services,$banner], 200);
         } catch (\Exception $e) {
             return response()->json(['status' => false, 'messaege' => 'Something Went Wrong' . $e->getMessage()], 500);
         }

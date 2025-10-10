@@ -17,7 +17,7 @@ class BannerController extends Controller
     {
         $validate = $request->validate([
             'title' => 'required',
-            'discount_value' => 'required',
+            'discount' => 'required',
             'image' => 'required',
         ]);
 
