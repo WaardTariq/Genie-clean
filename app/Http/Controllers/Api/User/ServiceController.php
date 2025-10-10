@@ -163,16 +163,9 @@ class ServiceController extends Controller
             $booking->time = $request->time;
             $booking->address = $request->address;
             $booking->total_amount = $total_amount;
+            $booking->promo_code_id = $promo->id;
             $booking->status = 'pending';
             $booking->save();
-
-            if (!empty($promo)) {
-                PromoCodeUsages::create([
-                    'promo_code_id' => $promo->id,
-                    'user_id' => $user->id,
-                    'job_id' => $booking->id,
-                ]);
-            }
 
             DB::commit();
 

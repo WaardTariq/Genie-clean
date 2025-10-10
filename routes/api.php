@@ -5,6 +5,7 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Api\User\AuthController;
 use App\Http\Controllers\Api\User\ServiceController;
 use App\Http\Controllers\Api\Cleaner\CleanerAuthController;
+use App\Http\Controllers\Api\User\ReviewController;
 /*
 |--------------------------------------------------------------------------
 | API Routes
@@ -33,6 +34,11 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::get('get-service-detail', 'getServiceDetail');
         Route::post('filter-cleaner', 'filterCleaner');
         Route::post('create-booking', 'createBooking');
+    });
+
+    Route::controller(ReviewController::class)->group(function(){
+        Route::post('create-review','createReview');
+        Route::get('get-reviews','getReviews');
     });
 
 });
