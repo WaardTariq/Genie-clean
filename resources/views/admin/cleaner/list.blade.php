@@ -12,10 +12,6 @@
                 <h6>Cleaners Management</h6>
                 <p>Here are all cleaners</p>
             </div>
-            <div class="ms-auto">
-                {{-- <div class="btn-group">
-                    <a href="{{ route('jobCreate') }}" type="button" class="btn btn-primary">Add Job</a>
-            </div> --}}
         </div>
     </div>
     <hr>
@@ -53,7 +49,9 @@
                                                 <img src="{{ $cleaner->image }}" alt="">
                                             </div>
                                             <div class="TableMainImageText ms-2">
-                                                <p><B>{{ $cleaner->name ?? 'Not Found' }}</B></p>
+                                                <a href="{{ route('cleanerDetail',$cleaner->id) }}">
+                                                    <p><B>{{ $cleaner->name ?? 'Not Found' }}</B></p>
+                                                </a>
                                             </div>
                                         </div>
                                     </td>
@@ -69,7 +67,6 @@
                                     <td>
                                         <div class="btn-group">
                                             <button data-bs-toggle="modal" data-bs-target="#AppointJob" type="button" class="btn btn-outline-info"><i class="fa-solid fa-calendar-check"></i></button>
-                                            <a href="jobsViewPage.php" type="button" class="btn btn-outline-info"><i class="fa-regular fa-eye"></i></a>
                                             <button type="button" class="btn btn-outline-danger"><i class="fa-solid fa-trash"></i></button>
                                         </div>
                                     </td>

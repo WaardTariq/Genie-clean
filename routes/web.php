@@ -67,6 +67,7 @@ Route::middleware(['auth'])->group(function () {
 
     Route::controller(CleanerController::class)->group(function () {
         Route::get('cleaner-index', 'cleanerIndex')->name('cleanerIndex');
+        Route::get('cleaner-detail/{id}','cleanerDetail')->name('cleanerDetail');
     });
 
 
