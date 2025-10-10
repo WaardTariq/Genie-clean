@@ -73,7 +73,7 @@
             </a>
         </li>
 
-        <li>
+        {{-- <li>
             <a href="auditReportsList.php" class="">
                 <div class="parent-icon">
                     <i class="fa-solid fa-box"></i>
@@ -96,8 +96,8 @@
                 </div>
                 <div class="menu-title">Team Members</div>
             </a>
-        </li>
-        <li>
+        </li> --}}
+        {{-- <li>
             <a href="javascript:;" class="">
                 <div class="parent-icon">
                     <i class="fa-solid fa-box"></i>
@@ -115,7 +115,7 @@
                     <a href="clientsList.php"><i class="bi bi-circle"></i>Banned Clients</a>
                 </li>
             </ul>
-        </li>
+        </li> --}}
         <li style="color: white; margin-top: 20px;">Marketing & Advertising</li>
         <li>
             <a href="{{ route('promoCodeIndex') }}" class="">
@@ -161,7 +161,7 @@
                 </li>
             </ul>
         </li>
-        <li>
+        {{-- <li>
             <a href="calendar.php" class="">
                 <div class="parent-icon">
                     <i class="fa-solid fa-box"></i>
@@ -184,7 +184,7 @@
                 </div>
                 <div class="menu-title">Messages</div>
             </a>
-        </li>
+        </li> --}}
 
     </ul>
 </aside>

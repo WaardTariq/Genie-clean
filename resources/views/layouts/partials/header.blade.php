@@ -141,17 +141,20 @@
                 </li>
             </ul>
         </div>
+        @php
+        $user = auth()->user();
+        @endphp
         <div class="menuBtn">
             <div class="user-setting d-flex align-items-center gap-3" style="background: #00a6ec;">
-                <img src="{{ asset('assets/images/avatars/avatar-1.png') }}" class="user-img" alt="">
+                <img src="{{ $user->image }}" class="user-img" alt="">
                 <div class="d-none d-sm-block">
-                    <p class="user-name mb-0">Jhon Deo</p>
+                    <p class="user-name mb-0">{{ $user->name ?? 'Not Found' }}</p>
                     <small class="mb-0 dropdown-user-designation">Admin</small>
                 </div>
             </div>
         </div>
         <ul class="dropdown-menu" style="right: 75px;top: 60px;">
-            <li><a class="dropdown-item" href="pages-user-profile.html">Profile</a></li>
+            <li><a class="dropdown-item" href="{{ route('editProfile') }}">Profile</a></li>
             <hr class="dropdown-divider m-0 white">
             <li><a class="dropdown-item" href="{{ route('logout') }}">Logout</a></li>
         </ul>

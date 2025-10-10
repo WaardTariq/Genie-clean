@@ -2,6 +2,8 @@
 
 namespace App\Http\Controllers;
 
+use App\CentralLogics\Helpers;
+use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Validator;
@@ -47,6 +49,31 @@ class AuthController extends Controller
         $request->session()->regenerateToken();
 
         return redirect()->route('loginIndex')->with('modal-success', 'You have been logged out successfully.');
+    }
+
+    public function editProfile(Request $request)
+    {
+        $profile = User::findOrFail(auth()->id());
+        return view('admin.auth.profile', compact('profile'));
+    }
+
+    public function updateProfile(Request $request)
+    {
+        $profile = User::findOrFail(auth()->id());
+        if ($request->has('name')) {
+            $profile->name = $request->name;
+        }
+        if ($request->has('address')) {
+            $profile->address = $request->address;
+        }
+        if ($request->has('phone')) {
+            $profile->phone = $request->phone;
+        }
+        if ($request->has('image')) {
+            $profile->image = Helpers::customUpload('user-image', $request->image);
+        }
+        $profile->save();
+        return redirect()->back()->with('modal-success','Profile Updated Successfully');
     }
 
 

@@ -31,10 +31,6 @@ Route::middleware(['auth'])->group(function () {
     })->name('dashboard');
 
 
-    Route::controller(ZoneController::class)->group(function () {
-        Route::get('zone-index', 'zoneIndex')->name('zoneIndex');
-    });
-
     Route::controller(CategoriesController::class)->group(function () {
         Route::get('category-index', 'categoryIndex')->name('categoryIndex');
         Route::post('category-store', 'categoryStore')->name('categoryStore');
@@ -85,11 +81,12 @@ Route::middleware(['auth'])->group(function () {
 
     Route::controller(AuthController::class)->group(function () {
         Route::get('edit-profile', 'editProfile')->name('editProfile');
+        Route::post('update-profile','updateProfile')->name('updateProfile');
     });
 
     Route::controller(BannerController::class)->group(function () {
         Route::get('create-banner', 'createBanner')->name('createBanner');
-        Route::post('store-banner','storeBanner')->name('storeBanner');
+        Route::post('store-banner', 'storeBanner')->name('storeBanner');
     });
 
 });
