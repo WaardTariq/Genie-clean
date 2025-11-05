@@ -13,10 +13,6 @@ class Cleaner extends Authenticatable
 {
     use HasFactory, HasApiTokens;
 
-    // public function service()
-    // {
-    //     return $this->belongsTo(Service::class);
-    // }
 
     public function zones()
     {
@@ -39,7 +35,9 @@ class Cleaner extends Authenticatable
     protected function image(): Attribute
     {
         return Attribute::make(
-            get: fn($value) => asset('storage/cleaner-image/' . $value),
+            get: fn($value) => $value
+            ? asset('storage/cleaner-image/' . $value)
+            : asset('assets/images/avatars/avatar-1.png')
         );
     }
 }

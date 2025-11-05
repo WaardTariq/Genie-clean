@@ -16,8 +16,28 @@ class BookingController extends Controller
 
     public function bookingDetail($id)
     {
-        $booking = Job::with(['promoCode', 'service', 'cleaner', 'user'])->findOrFail($id);
+        $booking = Job::with(['promoCode', 'service', 'cleaner.services', 'user'])->findOrFail($id);
         return view('admin.booking.detail', compact('booking'));
+    }
+
+    public function unassignCleaner($id)
+    {
+        try {
+            $booking = Job::findOrFail($id);
+
+            if (!$booking->cleaner_id) {
+                return redirect()->back()->with('modal-danger', 'Cleaner is not assigned');
+            }
+
+            // Unassign the cleaner
+            $booking->cleaner_id = null;
+            $booking->save();
+
+            return redirect()->back()->with('modal-success', 'Cleaner UnAssign Successfully, Now You can assign new Cleaner');
+
+        } catch (\Exception $e) {
+            return redirect()->back()->with('modal-danger', 'Something Went Wrong' . $e->getMessage());
+        }
     }
 
 

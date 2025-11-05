@@ -10,6 +10,7 @@ use App\Http\Controllers\CleanerController;
 use App\Http\Controllers\PromoCodeController;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\BannerController;
+use App\Http\Controllers\PaymentController;
 
 /*
 |--------------------------------------------------------------------------
@@ -53,6 +54,7 @@ Route::middleware(['auth'])->group(function () {
     Route::controller(BookingController::class)->group(function () {
         Route::get('booking-list', 'bookingList')->name('bookingList');
         Route::get('booking-detail/{id}', 'bookingDetail')->name('bookingDetail');
+        Route::post('unassign-cleaner/{id}', 'unassignCleaner')->name('unassignCleaner');
 
     });
 
@@ -81,12 +83,16 @@ Route::middleware(['auth'])->group(function () {
 
     Route::controller(AuthController::class)->group(function () {
         Route::get('edit-profile', 'editProfile')->name('editProfile');
-        Route::post('update-profile','updateProfile')->name('updateProfile');
+        Route::post('update-profile', 'updateProfile')->name('updateProfile');
     });
 
     Route::controller(BannerController::class)->group(function () {
         Route::get('create-banner', 'createBanner')->name('createBanner');
         Route::post('store-banner', 'storeBanner')->name('storeBanner');
+    });
+
+    Route::controller(PaymentController::class)->group(function () {
+        Route::get('payment-index', 'paymentIndex')->name('paymentIndex');
     });
 
 });

@@ -39,4 +39,13 @@ class service extends Model
             set: fn($value) => is_array($value) ? json_encode($value) : $value,
         );
     }
+
+    protected function whatsIncluded(): Attribute
+    {
+        return Attribute::make(
+            get: fn($value) => $value
+            ? array_map('trim', explode(',', $value))
+            : []
+        );
+    }
 }

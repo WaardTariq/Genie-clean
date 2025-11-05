@@ -203,10 +203,10 @@ class AuthController extends Controller
     public function logout()
     {
         try {
-            $supervisor = auth()->user()->id;
+            $user = auth()->user();
 
-            if ($supervisor && $supervisor->currentAccessToken()) {
-                $supervisor->currentAccessToken()->delete();
+            if ($user && $user->currentAccessToken()) {
+                $user->currentAccessToken()->delete();
             }
 
             return response()->json([

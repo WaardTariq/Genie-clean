@@ -6,6 +6,8 @@ use App\Http\Controllers\Api\User\AuthController;
 use App\Http\Controllers\Api\User\ServiceController;
 use App\Http\Controllers\Api\Cleaner\CleanerAuthController;
 use App\Http\Controllers\Api\User\ReviewController;
+use App\Http\Controllers\Api\User\PaymentController;
+
 /*
 |--------------------------------------------------------------------------
 | API Routes
@@ -36,9 +38,14 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::post('create-booking', 'createBooking');
     });
 
-    Route::controller(ReviewController::class)->group(function(){
-        Route::post('create-review','createReview');
-        Route::get('get-reviews','getReviews');
+    Route::controller(ReviewController::class)->group(function () {
+        Route::post('create-review', 'createReview');
+        Route::get('get-reviews', 'getReviews');
+    });
+
+    Route::controller(PaymentController::class)->group(function () {
+        Route::post('setup-intent', 'createPaymentIntent');
+        Route::post('payment', 'paymentConfirmation');
     });
 
 });

@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Api\User;
 
 use App\Http\Controllers\Controller;
 use App\Models\Banner;
+use App\Models\Booking;
 use App\Models\Cleaner;
 use App\Models\Job;
 use App\Models\PromoCode;
@@ -19,8 +20,8 @@ class ServiceController extends Controller
     {
         try {
             $services = service::where('status', 1)->get();
-            $banner = Banner::where('status',1)->get();
-            return response()->json(['status' => true, 'message' => 'Services Fetched Successfully', 'data' => $services,$banner], 200);
+
+            return response()->json(['status' => true, 'message' => 'Services Fetched Successfully', 'data' => $services], 200);
         } catch (\Exception $e) {
             return response()->json(['status' => false, 'messaege' => 'Something Went Wrong' . $e->getMessage()], 500);
         }
@@ -58,12 +59,10 @@ class ServiceController extends Controller
             $time = $request->time;
             $zoneId = $request->zone_id;
 
-            // 1. Get all cleaners mapped to this zone
             $cleaners = Cleaner::whereHas('zones', function ($q) use ($zoneId) {
                 $q->where('zones.id', $zoneId);
             });
 
-            // 2. Exclude cleaners already booked at the same date/time
             $availableCleaners = $cleaners->whereDoesntHave('jobs', function ($q) use ($date, $time) {
                 $q->where('date', $date)->where('time', $time);
             })->get();
@@ -75,7 +74,6 @@ class ServiceController extends Controller
                 ], 404);
             }
 
-            // 3. Return available cleaners so user can select one
             return response()->json([
                 'status' => true,
                 'message' => 'Available cleaners fetched successfully',
@@ -156,7 +154,7 @@ class ServiceController extends Controller
                 $total_amount = max($base_price - $discount, 0);
             }
 
-            $booking = new Job();
+            $booking = new Booking();
             $booking->user_id = $user->id;
             $booking->cleaner_id = $cleaner->id;
             $booking->service_id = $service->id;
@@ -165,8 +163,9 @@ class ServiceController extends Controller
             $booking->time = $request->time;
             $booking->address = $request->address;
             $booking->total_amount = $total_amount;
-            $booking->promo_code_id = $promo->id;
+            $booking->promo_code_id = $promo?->id ?? null;
             $booking->status = 'pending';
+            $booking->discount_value = $promo->discount_value;
             $booking->save();
 
             DB::commit();

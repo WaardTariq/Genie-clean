@@ -30,7 +30,7 @@
                     </div>
                     <div class="descriptionContent">
                         <p>Total Amount:</p>
-                        <p>{{ $booking->total_amount ?? 'Not Found' }}</p>
+                        <p>{{ $booking->cleaner->price ?? 'Not Found' }}</p>
                     </div>
                     <div class="descriptionContent">
                         <p>Payment Method:</p>
@@ -94,12 +94,12 @@
             <div class="card radius-10 w-100">
                 <div class="card-header">
                     <div class="d-flex justify-content-between align-items-center">
-                        <h6>Provider Details :</h6>
+                        <h6>Cleaner Details :</h6>
                     </div>
                 </div>
                 <div class="card-body">
                     <div class="imgDivContainer text-center p-3">
-                        <img src="{{ $booking->cleaner->image }}" alt="user avatar" class="img-fluid">
+                        <img src="{{ $booking->cleaner->image ?? 'Not Found' }}" alt="user avatar" class="img-fluid">
                         <h5 class="mt-3 mb-0">{{ $booking->cleaner->name ?? 'Not Found' }}</h5>
                         <p class="mb-0">{{ $booking->cleaner->email ?? 'Not Found' }}</p>
                     </div>
@@ -128,23 +128,24 @@
             <div class="card radius-10 w-100">
                 <div class="card-header">
                     <div class="d-flex justify-content-between align-items-center">
-                        <h6>Booking Settings :</h6>
+                        <h6>Assign Booking :</h6>
                     </div>
                 </div>
                 <div class="card-body">
                     <div class="row">
-                        <div class="col-12">
-                            <label for="">Booking Status</label>
-                            <select name="" class="form-select" id=""></select>
-                        </div>
-                        <div class="col-12">
-                            <label for="">Select Date</label>
-                            <input type="text" class="form-control" value="" name="" id="">
-                        </div>
-                        <div class="col-12">
-                            <label for="">Payment Status</label>
-                            <select name="" class="form-select" id=""></select>
-                        </div>
+                        @if($booking->cleaner)
+                        <form action="{{ route('unassignCleaner',$booking->id) }}" method="POST" class="text-center mb-3">
+                            @csrf
+                            <div class="col-12">
+                                <button type="submit" class="btn btn-primary">Unassign Cleaner</button>
+                            </div>
+                            @else
+                            <div class="col-12" style="margin-top: 20px;">
+                                <label for="">Available Cleaners</label>
+                                <select name="" class="form-select" id=""></select>
+                            </div>
+                            @endif
+                        </form>
                     </div>
                 </div>
             </div>
@@ -239,7 +240,7 @@
                         <p>$ {{ $booking->promoCode->discount_value ?? 'Not Found' }}</p>
                     </div>
                     <div class="descriptionContent">
-                        <p>Service Amount:</p>
+                        <p>Service Amount After Discount : </p>
                         <p>$ {{ $booking->total_amount ?? 'Not Found' }}</p>
                     </div>
                 </div>

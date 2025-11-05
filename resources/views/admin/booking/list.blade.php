@@ -39,7 +39,6 @@
                                 <th>Payment Status</th>
                                 <th>Created At</th>
                                 <th>Status</th>
-                                <th>Assign Cleaner</th>
                                 <th>Action</th>
                             </thead>
                             <tbody>
@@ -55,6 +54,7 @@
                                         <span class="badge_green">Paid</span>
                                         @endif
                                     </td>
+                                    <td>{{ $booking->created_at->format('Y-m-d') }}</td>
                                     <td>
                                         @if($booking->status == 'pending')
                                         <span class="badge_yellow">Pending</span>
@@ -66,10 +66,9 @@
                                         <span class="badge_red">Cancelled</span>
                                         @endif
                                     </td>
-                                    <td>{{ $booking->created_at->format('Y-m-d') }}</td>
-                                    <td>
+                                    {{-- <td>
                                         <button data-bs-toggle="modal" data-bs-target="#AppointJob" type="button" class="btn btn-outline-info"><i class="fa-solid fa-users"></i></button>
-                                    </td>
+                                    </td> --}}
                                     <td>
                                         <div class="btn-group">
                                             <button type="button" class="btn btn-outline-danger"><i class="fa-solid fa-trash"></i></button>
