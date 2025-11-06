@@ -29,10 +29,12 @@ class PaymentController extends Controller
 
         try {
             $user = auth()->user();
-            $booking = Booking::with(['service', 'cleaner', 'reviews'])->findOrFail($request->booking_id);
+            $booking = Booking::with(['service', 'cleaner.services', 'reviews'])->findOrFail($request->booking_id);
+            // return $booking;
             $finalAmount = $booking->total_amount;
 
             $reviewRating = $booking->reviews->avg('rating') ?? null;
+            $cleanerServices = $booking->cleaner->services->pluck('name')->toArray();
 
             if ($finalAmount <= 0) {
                 return response()->json([
@@ -56,6 +58,7 @@ class PaymentController extends Controller
                     'duration' => $booking->service->max_duration,
                     'duration_unit' => $booking->service->duration_unit,
                     'cleaner_name' => $booking->cleaner->name,
+                    'cleaner_services' => implode(', ', $cleanerServices),
                     'reviews_rating' => $reviewRating
                 ],
             ]);
@@ -93,6 +96,7 @@ class PaymentController extends Controller
             $paymentIntentId = $request->input('payment_intent_id');
             Stripe::setApiKey(env('STRIPE_SECRET'));
             $paymentIntent = PaymentIntent::retrieve($paymentIntentId);
+            // return $paymentIntent;
             $status = $this->mapPaymentIntentStatusToDatabaseStatus($paymentIntent->status);
 
             $payment = Payment::updateOrCreate(
@@ -118,6 +122,8 @@ class PaymentController extends Controller
                     'date' => $paymentIntent->metadata->date ?? null,
                     'time' => $paymentIntent->metadata->time ?? null,
                     'address' => $paymentIntent->metadata->address ?? null,
+                    'cleaner_name' => $paymentIntent->metadata->cleaner_name ?? null,
+                    'cleaner_services' => explode(',', $paymentIntent->metadata->cleaner_services ?? null),
                     'reviews_rating' => $paymentIntent->metadata->reviews_rating ?? null,
                 ],
             ], 200);

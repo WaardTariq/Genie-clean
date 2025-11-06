@@ -9,8 +9,8 @@ class Reviews extends Model
 {
     use HasFactory;
 
-    public function job()
+    public function booking()
     {
-        return $this->belongsTo(Job::class);
+        return $this->belongsTo(Booking::class);
     }
 }

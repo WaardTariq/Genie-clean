@@ -59,13 +59,15 @@ class ServiceController extends Controller
             $time = $request->time;
             $zoneId = $request->zone_id;
 
-            $cleaners = Cleaner::whereHas('zones', function ($q) use ($zoneId) {
-                $q->where('zones.id', $zoneId);
-            });
-
-            $availableCleaners = $cleaners->whereDoesntHave('jobs', function ($q) use ($date, $time) {
-                $q->where('date', $date)->where('time', $time);
-            })->get();
+            $availableCleaners = Cleaner::with(['services', 'reviews'])
+                ->whereHas('zones', function ($q) use ($zoneId) {
+                    $q->where('zones.id', $zoneId);
+                })
+                ->whereDoesntHave('booking', function ($q) use ($date, $time) {
+                    $q->where('date', $date)
+                        ->where('time', $time);
+                })
+                ->get();
 
             if ($availableCleaners->isEmpty()) {
                 return response()->json([
@@ -74,10 +76,29 @@ class ServiceController extends Controller
                 ], 404);
             }
 
+            // Add average rating and format services
+            $formatted = $availableCleaners->map(function ($cleaner) {
+                return [
+                    'id' => $cleaner->id,
+                    'name' => $cleaner->name,
+                    'image' => $cleaner->image,
+                    'experience_year' => $cleaner->experience_year,
+                    'rating' => round($cleaner->reviews->avg('rating'), 1) ?? null,
+                    'services' => $cleaner->services->map(function ($service) {
+                        return [
+                            'id' => $service->id,
+                            'name' => $service->name,
+                            'price' => $service->pivot->price,
+                            'duration_minutes' => $service->pivot->duration_minutes,
+                        ];
+                    }),
+                ];
+            });
+
             return response()->json([
                 'status' => true,
                 'message' => 'Available cleaners fetched successfully',
-                'data' => $availableCleaners
+                'data' => $formatted,
             ], 200);
 
         } catch (\Exception $e) {
@@ -165,7 +186,7 @@ class ServiceController extends Controller
             $booking->total_amount = $total_amount;
             $booking->promo_code_id = $promo?->id ?? null;
             $booking->status = 'pending';
-            $booking->discount_value = $promo->discount_value;
+            $booking->discount_value = $promo?->discount_value ?? null;
             $booking->save();
 
             DB::commit();
@@ -173,6 +194,7 @@ class ServiceController extends Controller
             return response()->json([
                 'status' => true,
                 'message' => 'Booking created successfully',
+                'data' => $booking
             ], 200);
 
         } catch (\Exception $e) {

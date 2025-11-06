@@ -53,7 +53,7 @@ class ReviewController extends Controller
     public function getReviews()
     {
         try {
-            $reviews = Reviews::with('job')->where('user_id', auth()->id())->get();
+            $reviews = Reviews::with('booking')->where('user_id', auth()->id())->get();
             return response()->json(['status' => true, 'message' => 'Reviews Fetched Successfully', 'data' => $reviews], 200);
         } catch (\Exception $e) {
             return response()->json(['status' => false, 'message' => 'Something Went Wrong' . $e->getMessage()], 500);

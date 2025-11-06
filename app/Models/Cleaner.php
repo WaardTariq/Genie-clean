@@ -22,14 +22,14 @@ class Cleaner extends Authenticatable
 
     public function services()
     {
-        return $this->belongsToMany(Service::class, 'cleaner_service', 'cleaner_id', 'service_id')
+        return $this->belongsToMany(service::class, 'cleaner_service', 'cleaner_id', 'service_id')
             ->withPivot(['price', 'duration_minutes'])
             ->withTimestamps();
     }
 
-    public function jobs()
+    public function booking()
     {
-        return $this->hasMany(Job::class);
+        return $this->hasMany(Booking::class);
     }
 
     protected function image(): Attribute
@@ -39,5 +39,10 @@ class Cleaner extends Authenticatable
             ? asset('storage/cleaner-image/' . $value)
             : asset('assets/images/avatars/avatar-1.png')
         );
+    }
+
+    public function reviews()
+    {
+        return $this->hasMany(Reviews::class, 'cleaner_id');
     }
 }
