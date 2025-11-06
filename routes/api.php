@@ -7,7 +7,7 @@ use App\Http\Controllers\Api\User\ServiceController;
 use App\Http\Controllers\Api\Cleaner\CleanerAuthController;
 use App\Http\Controllers\Api\User\ReviewController;
 use App\Http\Controllers\Api\User\PaymentController;
-
+use App\Http\Controllers\Api\User\BookingController;
 /*
 |--------------------------------------------------------------------------
 | API Routes
@@ -34,8 +34,6 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::controller(ServiceController::class)->group(function () {
         Route::get('get-services', 'getServices');
         Route::get('get-service-detail', 'getServiceDetail');
-        Route::post('filter-cleaner', 'filterCleaner');
-        Route::post('create-booking', 'createBooking');
     });
 
     Route::controller(ReviewController::class)->group(function () {
@@ -46,6 +44,12 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::controller(PaymentController::class)->group(function () {
         Route::post('setup-intent', 'createPaymentIntent');
         Route::post('payment', 'paymentConfirmation');
+    });
+
+    Route::controller(BookingController::class)->group(function () {
+        Route::post('filter-cleaner', 'filterCleaner');
+        Route::post('create-booking', 'createBooking');
+        Route::get('my-booking','myBooking');
     });
 
 });
