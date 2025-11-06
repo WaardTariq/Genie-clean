@@ -49,7 +49,7 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::controller(BookingController::class)->group(function () {
         Route::post('filter-cleaner', 'filterCleaner');
         Route::post('create-booking', 'createBooking');
-        Route::get('my-booking','myBooking');
+        Route::get('my-booking', 'myBooking');
     });
 
 });
@@ -74,10 +74,14 @@ Route::controller(AuthController::class)->group(function () {
 
 // Cleaner Auth //
 Route::controller(CleanerAuthController::class)->group(function () {
-    Route::post('register', 'register');
-    Route::post('login', 'login');
-    Route::post('forgot-password', 'forgotPassword');
-    Route::post('otp-verification', 'otpVerification');
-    Route::post('reset-password', 'resetPassword');
+    Route::prefix('cleaner')->group(function () {
+        Route::post('register', 'register');
+        Route::post('login', 'login');
+        Route::post('forgot-password', 'forgotPassword');
+        Route::post('otp-verification', 'otpVerification');
+        Route::post('reset-password', 'resetPassword');
+
+    });
+
 });
 

@@ -44,14 +44,7 @@ class BookingController extends Controller
                 })
                 ->get();
 
-            if ($availableCleaners->isEmpty()) {
-                return response()->json([
-                    'status' => false,
-                    'message' => 'No cleaners available for the selected date and time'
-                ], 404);
-            }
 
-            // Add average rating and format services
             $formatted = $availableCleaners->map(function ($cleaner) {
                 return [
                     'id' => $cleaner->id,
@@ -174,8 +167,9 @@ class BookingController extends Controller
 
             $formatted = $booking->service->cleaners->first();
             $booking->cleaner = $formatted;
-
             $booking->service->makeHidden(['cleaners']);
+
+            $booking->discount_type = $promo?->discount_type ?? null;
 
             DB::commit();
 

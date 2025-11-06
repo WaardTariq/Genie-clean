@@ -2,7 +2,7 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Job;
+use App\Models\Booking;
 use Illuminate\Http\Request;
 
 class BookingController extends Controller
@@ -10,20 +10,20 @@ class BookingController extends Controller
 
     public function bookingList()
     {
-        $bookings = Job::with(['promoCode', 'service', 'cleaner', 'user'])->get();
+        $bookings = Booking::with(['promoCode', 'service', 'cleaner', 'user'])->get();
         return view('admin.booking.list', compact('bookings'));
     }
 
     public function bookingDetail($id)
     {
-        $booking = Job::with(['promoCode', 'service', 'cleaner.services', 'user'])->findOrFail($id);
+        $booking = Booking::with(['promoCode', 'service', 'cleaner.services', 'user'])->findOrFail($id);
         return view('admin.booking.detail', compact('booking'));
     }
 
     public function unassignCleaner($id)
     {
         try {
-            $booking = Job::findOrFail($id);
+            $booking = Booking::findOrFail($id);
 
             if (!$booking->cleaner_id) {
                 return redirect()->back()->with('modal-danger', 'Cleaner is not assigned');

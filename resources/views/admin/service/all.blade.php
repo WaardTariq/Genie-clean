@@ -69,9 +69,10 @@
                                     <td>{{ $service->min_duration ?? 'Not Found' }} - {{ $service->max_duration }} Hours</td>
                                     <td>${{ $service->min_price ?? 'Not Found' }} - {{ $service->max_price }}</td>
                                     <td>
-                                        @foreach ($included as $item )
+                                        @forelse ($service->whats_included as $item )
                                         <li>{{ $item }}</li>
-                                        @endforeach
+                                        @empty
+                                        @endforelse
                                     </td>
                                     <td>
                                         @if($service->status == 1)

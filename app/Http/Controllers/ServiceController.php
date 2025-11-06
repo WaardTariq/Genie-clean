@@ -13,11 +13,7 @@ class ServiceController extends Controller
     {
         $categories = Categories::where('status', 1)->get();
         $services = service::with('category')->where('status', 1)->get();
-
-        foreach ($services as $service) {
-            $included = explode(',', $service->whats_included);
-        }
-        return view('admin.service.all', compact('categories', 'services', 'included'));
+        return view('admin.service.all', compact('categories', 'services'));
     }
 
     public function serviceCreate()

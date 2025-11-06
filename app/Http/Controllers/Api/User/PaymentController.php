@@ -30,11 +30,14 @@ class PaymentController extends Controller
         try {
             $user = auth()->user();
             $booking = Booking::with(['service', 'cleaner.services', 'reviews'])->findOrFail($request->booking_id);
-            // return $booking;
             $finalAmount = $booking->total_amount;
 
             $reviewRating = $booking->reviews->avg('rating') ?? null;
-            $cleanerServices = $booking->cleaner->services->pluck('name')->toArray();
+            $cleanerServices = $booking->cleaner->services->where('id', $booking->service_id)->values()->first();
+
+
+            $cleanerServices = $booking->cleaner->services->where('id', $booking->service_id)->values()->first();
+            $result = $cleanerServices->pivot->price ?? null;
 
             if ($finalAmount <= 0) {
                 return response()->json([
@@ -46,20 +49,23 @@ class PaymentController extends Controller
             $finalAmountInCents = intval($finalAmount * 100);
             Stripe::setApiKey(env('STRIPE_SECRET'));
             $paymentIntent = PaymentIntent::create([
-                'amount' => $finalAmountInCents,
+                'amount' => intval($finalAmount * 100),
                 'currency' => 'usd',
                 'metadata' => [
                     'user_id' => $user->id,
                     'booking_id' => $booking->id,
                     'date' => $booking->date,
                     'time' => $booking->time,
-                    'address' => $booking->address,
-                    'service' => $booking->service->name,
+                    'reviews_rating' => $reviewRating,
                     'duration' => $booking->service->max_duration,
                     'duration_unit' => $booking->service->duration_unit,
+                    'address' => $booking->address,
+                    'service' => $booking->service->name,
                     'cleaner_name' => $booking->cleaner->name,
-                    'cleaner_services' => implode(', ', $cleanerServices),
-                    'reviews_rating' => $reviewRating
+                    'service_fee' => $cleanerServices->pivot->price ?? null,
+                    'experience_year' => $booking->cleaner->experience_year,
+                    'discount_value' => $booking->discount_value,
+                    'cleaner_services' => json_encode($cleanerServices->name),
                 ],
             ]);
 
@@ -96,8 +102,21 @@ class PaymentController extends Controller
             $paymentIntentId = $request->input('payment_intent_id');
             Stripe::setApiKey(env('STRIPE_SECRET'));
             $paymentIntent = PaymentIntent::retrieve($paymentIntentId);
-            // return $paymentIntent;
             $status = $this->mapPaymentIntentStatusToDatabaseStatus($paymentIntent->status);
+
+            $cleanerServices = json_decode($paymentIntent->metadata->cleaner_services ?? '[]', true);
+            $bookingId = $paymentIntent->metadata->booking_id;
+            $booking = Booking::with(['service', 'cleaner.services', 'reviews'])->findOrFail($bookingId);
+
+            $cleanerServices = $booking->cleaner->services->map(function ($service) {
+                return [
+                    'id' => $service->id,
+                    'name' => $service->name,
+                    'price' => $service->pivot->price,
+                    'duration' => $service->pivot->duration_minutes,
+                    'duration_unit' => $service->duration_unit,
+                ];
+            })->values()->toArray();
 
             $payment = Payment::updateOrCreate(
                 ['stripe_payment_intent_id' => $paymentIntent->id],
@@ -123,8 +142,11 @@ class PaymentController extends Controller
                     'time' => $paymentIntent->metadata->time ?? null,
                     'address' => $paymentIntent->metadata->address ?? null,
                     'cleaner_name' => $paymentIntent->metadata->cleaner_name ?? null,
-                    'cleaner_services' => explode(',', $paymentIntent->metadata->cleaner_services ?? null),
-                    'reviews_rating' => $paymentIntent->metadata->reviews_rating ?? null,
+                    'cleaner_services' => $cleanerServices,
+                    'discount_value' => $paymentIntent->metadata->discount_value ?? null,
+                    'service_fee' => $paymentIntent->metadata->service_fee ?? null,
+                    'experience_year' => $paymentIntent->metadata->experience_year ?? null,
+                    'rating' => $paymentIntent->metadata->reviews_rating ?? null,
                 ],
             ], 200);
 
