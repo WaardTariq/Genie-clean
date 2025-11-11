@@ -282,7 +282,6 @@ class CleanerAuthController extends Controller
         }
     }
 
-
     public function getZones()
     {
         try {
@@ -292,6 +291,45 @@ class CleanerAuthController extends Controller
             return response()->json(['status' => false, 'message' => 'Something Went Wrong' . $e->getMessage()], 500);
         }
 
+    }
+
+    public function makeCleanerOnline(Request $request)
+    {
+        $validator = Validator::make($request->all(), [
+            'cleaner_id' => 'required|exists:cleaners,id',
+            'status' => 'required|in:online,offline',
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json([
+                'status' => false,
+                'message' => 'Validation errors',
+                'errors' => $validator->errors(),
+            ], 422);
+        }
+
+        try {
+            $cleaner = Cleaner::find($request->cleaner_id);
+
+            $cleaner->is_online = $request->status === 'online' ? 1 : 0;
+            $cleaner->save();
+
+            return response()->json([
+                'status' => true,
+                'message' => 'Cleaner status updated successfully',
+                'data' => [
+                    'cleaner_id' => $cleaner->id,
+                    'is_online' => (bool) $cleaner->is_online,
+                ],
+            ]);
+
+        } catch (\Exception $e) {
+            return response()->json([
+                'status' => false,
+                'message' => 'Something went wrong',
+                'error' => $e->getMessage(),
+            ], 500);
+        }
     }
 
 }

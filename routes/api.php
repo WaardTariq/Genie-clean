@@ -58,7 +58,9 @@ Route::middleware('auth:cleaners')->group(function () {
     Route::controller(CleanerAuthController::class)->group(function () {
         Route::post('update-profile', 'updateProfile');
         Route::get('get-zones', 'getZones');
+        Route::post('make-cleaner-online','makeCleanerOnline');
     });
+
 });
 
 

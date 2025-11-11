@@ -23,7 +23,7 @@ class Cleaner extends Authenticatable
     public function services()
     {
         return $this->belongsToMany(service::class, 'cleaner_service', 'cleaner_id', 'service_id')
-            ->withPivot(['price', 'duration_minutes'])
+            ->withPivot(['price', 'duration_minutes','duration_unit'])
             ->withTimestamps();
     }
 

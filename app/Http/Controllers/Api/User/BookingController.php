@@ -58,7 +58,7 @@ class BookingController extends Controller
                             'name' => $service->name,
                             'price' => $service->pivot->price,
                             'duration' => $service->pivot->duration_minutes,
-                            'duration_unit' => $service->duration_unit,
+                            'duration_unit' => $service->pivot->duration_unit,
                         ];
                     }),
                 ];
@@ -100,7 +100,6 @@ class BookingController extends Controller
             $service = service::findOrFail($request->service_id);
             $cleaner = Cleaner::findOrFail($request->cleaner_id);
             $service = $cleaner->services()->where('service_id', $request->service_id)->first();
-            // return $service;
             if (!$service) {
                 return response()->json(['status' => false, 'message' => 'Cleaner does not provide this service'], 400);
             }
@@ -188,11 +187,40 @@ class BookingController extends Controller
     public function myBooking()
     {
         try {
-            $userId = auth()->user()->id;
-            $booking = Booking::where('user_id', $userId)->get();
-            return response()->json(['status' => false, 'message' => 'Booking Fetched Successfully', 'data' => $booking], 200);
+            $userId = auth()->id();
+
+            $bookings = Booking::with(['user', 'service', 'cleaner.services'])
+                ->where('user_id', $userId)
+                ->get();
+
+            $bookings->transform(function ($booking) {
+                $pivot = $booking->cleaner?->services
+                    ->where('id', $booking->service_id)
+                    ->first()?->pivot;
+
+                if ($pivot) {
+                    $booking->cleaner->price = $pivot->price;
+                    $booking->cleaner->duration_minutes = $pivot->duration_minutes;
+                    $booking->cleaner->duration_unit = $pivot->duration_unit;
+                }
+
+                unset($booking->cleaner->services);
+
+                return $booking;
+            });
+
+            return response()->json([
+                'status' => true,
+                'message' => 'Bookings fetched successfully',
+                'data' => $bookings
+            ], 200);
+
         } catch (\Exception $e) {
-            return response()->json(['status' => false, 'message' => 'Something Went Wrong' . $e->getMessage()], 500);
+            return response()->json([
+                'status' => false,
+                'message' => 'Something went wrong: ' . $e->getMessage(),
+            ], 500);
         }
     }
+
 }

@@ -26,7 +26,7 @@ class service extends Model
     public function cleaners()
     {
         return $this->belongsToMany(Cleaner::class, 'cleaner_service', 'service_id', 'cleaner_id')
-            ->withPivot(['price', 'duration_minutes'])
+            ->withPivot(['price', 'duration_minutes','duration_unit'])
             ->withTimestamps();
     }
 

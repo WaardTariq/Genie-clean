@@ -32,7 +32,7 @@ class PaymentController extends Controller
             $booking = Booking::with(['service', 'cleaner.services', 'reviews'])->findOrFail($request->booking_id);
             $finalAmount = $booking->total_amount;
 
-            $reviewRating = $booking->reviews->avg('rating') ?? null;
+            $reviewRating = $booking->reviews->avg('rating') ?? 1;
             $cleanerServices = $booking->cleaner->services->where('id', $booking->service_id)->values()->first();
 
 
@@ -114,7 +114,7 @@ class PaymentController extends Controller
                     'name' => $service->name,
                     'price' => $service->pivot->price,
                     'duration' => $service->pivot->duration_minutes,
-                    'duration_unit' => $service->duration_unit,
+                    'duration_unit' => $service->pivot->duration_unit,
                 ];
             })->values()->toArray();
 
@@ -129,6 +129,10 @@ class PaymentController extends Controller
                     'payment_method' => 'Stripe',
                 ]
             );
+
+            $booking->status = 'confirmed';
+            $booking->payment_status = 'paid';
+            $booking->save();
 
             return response()->json([
                 'status' => true,
